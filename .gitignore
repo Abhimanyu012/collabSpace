@@ -1,2 +1,2 @@
-.cache/
-*.pyc
+node_modules
+.env
