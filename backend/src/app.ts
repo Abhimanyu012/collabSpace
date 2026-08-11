@@ -1,4 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from "express";
+import { db, pool } from "./db";
 
 const app: Application = express();
 
@@ -6,7 +7,12 @@ const app: Application = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ─── Health Check ──────────────────────────────────────────────────────────────
+pool
+  .query("SELECT 1")
+  .then(() => console.log("✅ Database is connected"))
+  .catch((error) => console.error("❌ Database connection failed", error));
+  
+ // ─── Health Check ──────────────────────────────────────────────────────────────
 app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });

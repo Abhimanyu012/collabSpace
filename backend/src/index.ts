@@ -1,8 +1,8 @@
-import * as dotenv from "dotenv";
-dotenv.config();
+import "dotenv/config";
 
 import app from "./app";
-import pool from "../src/db/index.js";
+import { pool } from "./db";
+
 
 const PORT = Number(process.env.PORT) || 3000;
 
