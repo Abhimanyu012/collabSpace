@@ -3,4 +3,4 @@
 // export * from "./users";
 
 // Placeholder export to keep TypeScript happy before any tables are defined
-export {};
+export * from "./users";
