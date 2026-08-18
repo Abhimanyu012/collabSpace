@@ -10,54 +10,42 @@ type TextElement = {
 
 function App() {
   const [elements, setElements] = useState<TextElement[]>([
-    {
-      id: "text-1",
-      type: "text",
-      content: "Hello World",
-      x: 100,
-      y: 100,
-    },
-    {
-      id: "text-2",
-      type: "text",
-      content: "Hello bro",
-      x: 100,
-      y: 200,
-    },
+    { id: "text-1", type: "text", content: "Hello World", x: 100, y: 100 },
+    { id: "text-2", type: "text", content: "Hello bro", x: 100, y: 200 },
   ]);
 
   const [draggingId, setDraggingId] = useState<string | null>(null);
-
   const canvasRef = useRef<HTMLDivElement>(null);
-
-  const dragOffset = useRef({
-    x: 0,
-    y: 0,
-  });
+  
+  // dragOffset को याद रखने के लिए useRef बिल्कुल सही है
+  const dragOffset = useRef({ x: 0, y: 0 });
 
   const addText = () => {
     const newElement: TextElement = {
-      id: `text-${elements.length + 1}`,
+      id: `text-${Date.now()}`, // elements.length से बेहतर है Date.now() ताकि ID हमेशा यूनिक रहे
       type: "text",
       content: "New Text",
-      x: 100,
-      y: 100 + elements.length * 100,
+      x: 200,
+      y: 100 + elements.length * 50,
     };
-
     setElements([...elements, newElement]);
   };
 
   const onMouseDown = (event: React.MouseEvent, element: TextElement) => {
-    const rect = canvasRef.current?.getBoundingClientRect();
+    // ब्राउज़र के डिफ़ॉल्ट ड्रैग/सिलेक्ट बिहेवियर को रोकने के लिए
+    event.preventDefault(); 
 
+    const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
 
+    // माउस की पोजीशन कैनवास के अंदर
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
+    // एलिमेंट के कोने से माउस की दूरी (Offset)
     dragOffset.current = {
-      x: mouseX - element.x,
-      y: mouseY - element.y,
+      x: mouseX -element.x,
+      y: mouseY -element.y
     };
 
     setDraggingId(element.id);
@@ -67,7 +55,6 @@ function App() {
     if (!draggingId) return;
 
     const rect = canvasRef.current?.getBoundingClientRect();
-
     if (!rect) return;
 
     const mouseX = event.clientX - rect.left;
@@ -79,54 +66,55 @@ function App() {
     setElements((currentElements) =>
       currentElements.map((element) =>
         element.id === draggingId
-          ? {
-              ...element,
-              x: newX,
-              y: newY,
-            }
-          : element,
-      ),
+          ? { ...element, x: newX, y: newY }
+          : element
+      )
     );
   };
 
   const onMouseUp = () => {
     setDraggingId(null);
   };
-  const onMouseLeave = () => {
-  if (!draggingId) return;
-
-  setDraggingId(null);
-};
 
   return (
-    <div>
+    <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
       <h1>CollabSpace</h1>
-
-      <button onClick={addText}>Add Text</button>
+      <button 
+        onClick={addText}
+        style={{ padding: "8px 16px", marginBottom: "10px", cursor: "pointer" }}
+      >
+        Add Text
+      </button>
 
       <div
         ref={canvasRef}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
-        onMouseLeave={onMouseLeave}
+        onMouseLeave={onMouseUp} // Leave होने पर भी हम ड्रैग बंद कर देते हैं
         style={{
           position: "relative",
           width: "800px",
           height: "600px",
-          border: "1px solid black",
-          overflow: "auto",
+          border: "2px dashed #ccc",
+          backgroundColor: "#f9f9f9",
+          overflow: "hidden", // auto से ड्रैग करते वक्त स्क्रॉल बार्स आ सकते हैं, hidden बेहतर है
         }}
       >
         {elements.map((element) => (
           <div
             key={element.id}
-            onMouseDown={(event) => onMouseDown(event, element)}
+            onMouseDown={(event) => pointer(event, element)}
             style={{
               position: "absolute",
-              left: element.x,
-              top: element.y,
+              left: `${element.x}px`, // 'px' लगाना अच्छी प्रैक्टिस है
+              top: `${element.y}px`,
               cursor: draggingId === element.id ? "grabbing" : "grab",
               userSelect: "none",
+              padding: "4px 8px",
+              backgroundColor: "white",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              // boxShadow: draggingId === element.id ? "0 4px 8px rgba(0,0,0,0.15)" : "none"
             }}
           >
             {element.content}
