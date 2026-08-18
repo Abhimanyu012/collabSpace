@@ -92,6 +92,11 @@ function App() {
   const onMouseUp = () => {
     setDraggingId(null);
   };
+  const onMouseLeave = () => {
+  if (!draggingId) return;
+
+  setDraggingId(null);
+};
 
   return (
     <div>
@@ -103,6 +108,7 @@ function App() {
         ref={canvasRef}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
+        onMouseLeave={onMouseLeave}
         style={{
           position: "relative",
           width: "800px",
