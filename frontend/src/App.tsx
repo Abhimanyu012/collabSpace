@@ -35,6 +35,7 @@ function App() {
     // ब्राउज़र के डिफ़ॉल्ट ड्रैग/सिलेक्ट बिहेवियर को रोकने के लिए
     event.preventDefault(); 
 
+      event.stopPropagation()
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
 
@@ -47,7 +48,7 @@ function App() {
       x: mouseX -element.x,
       y: mouseY -element.y
     };
-
+    
     setDraggingId(element.id);
   };
 
@@ -103,7 +104,7 @@ function App() {
         {elements.map((element) => (
           <div
             key={element.id}
-            onMouseDown={(event) => pointer(event, element)}
+            onMouseDown={(event) => onMouseDown(event, element)}
             style={{
               position: "absolute",
               left: `${element.x}px`, // 'px' लगाना अच्छी प्रैक्टिस है
