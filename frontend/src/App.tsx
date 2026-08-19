@@ -15,8 +15,9 @@ function App() {
   ]);
 
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  
+
   // dragOffset को याद रखने के लिए useRef बिल्कुल सही है
   const dragOffset = useRef({ x: 0, y: 0 });
 
@@ -33,9 +34,9 @@ function App() {
 
   const onMouseDown = (event: React.MouseEvent, element: TextElement) => {
     // ब्राउज़र के डिफ़ॉल्ट ड्रैग/सिलेक्ट बिहेवियर को रोकने के लिए
-    event.preventDefault(); 
-
-      event.stopPropagation()
+    event.preventDefault();
+    setSelectedId(element.id);
+    event.stopPropagation();
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
 
@@ -45,10 +46,10 @@ function App() {
 
     // एलिमेंट के कोने से माउस की दूरी (Offset)
     dragOffset.current = {
-      x: mouseX -element.x,
-      y: mouseY -element.y
+      x: mouseX - element.x,
+      y: mouseY - element.y,
     };
-    
+
     setDraggingId(element.id);
   };
 
@@ -66,10 +67,8 @@ function App() {
 
     setElements((currentElements) =>
       currentElements.map((element) =>
-        element.id === draggingId
-          ? { ...element, x: newX, y: newY }
-          : element
-      )
+        element.id === draggingId ? { ...element, x: newX, y: newY } : element,
+      ),
     );
   };
 
@@ -80,7 +79,7 @@ function App() {
   return (
     <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
       <h1>CollabSpace</h1>
-      <button 
+      <button
         onClick={addText}
         style={{ padding: "8px 16px", marginBottom: "10px", cursor: "pointer" }}
       >
@@ -113,7 +112,10 @@ function App() {
               userSelect: "none",
               padding: "4px 8px",
               backgroundColor: "white",
-              border: "1px solid #ddd",
+              border:
+                selectedId === element.id
+                  ? "1px solid black"
+                  : "1px solid #ddd",
               borderRadius: "4px",
               // boxShadow: draggingId === element.id ? "0 4px 8px rgba(0,0,0,0.15)" : "none"
             }}
