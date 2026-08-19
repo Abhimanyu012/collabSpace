@@ -59,9 +59,11 @@ function App() {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
 
-    const mouseX = event.clientX - rect.left;
+    //mouse position in canvas 
+    const mouseX = event.clientX - rect.left;  
     const mouseY = event.clientY - rect.top;
 
+    //final mouse position in canvas after ignoring the mouse position in elements (offset) 
     const newX = mouseX - dragOffset.current.x;
     const newY = mouseY - dragOffset.current.y;
 
